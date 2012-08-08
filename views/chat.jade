@@ -59,8 +59,7 @@ html
 					return temp;
 				}
 
-				var socket = io.connect('http://85.56.202.55:9898');
-				if(!socket) socket = io.connect('http://localhost:4000');
+				var socket = io.connect('http://localhost:4000');
 
 				socket.on('connect', function(data){
 					nickname = prompt("What's your nickname?");
