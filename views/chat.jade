@@ -7,10 +7,21 @@ html
     style(type='text/css')
       body{
         background-color: black;
+        color: green;
         font-family: verdana, arial;
       }
+      #chat{
+        float: left;
+        width: 75%;
+      }
+      #users{
+        float: left;
+        width: 20%;
+        border: 1px solid green;
+        padding: .5em;
+        margin: .5em;
+      }
       #messages{
-        color: green;
         padding: 1em;
         list-style: none;
       }
@@ -60,12 +71,26 @@ html
         }
         
         var socket = io.connect('http://localhost:4000');
-        
+
         socket.on('connect', function(data){
           nickname = prompt("What's your nickname?");
           socket.emit("join", nickname);
           $("#messages").append(formatMessage("Status", 
                   "Logged in as <b>"+nickname+"</b>", 0));
+          $("#usersList").append("<li><b>"+nickname+"</b></li>");
+        });
+
+        socket.on('status', function(data){
+          if(data.status == 'connected'){
+            $("#usersList").append("<li>"+data.name+"</li>");
+            $("#messages").append(formatMessage('Status', 
+                                                '<b>'+data.name + '</b> is in da house.'));
+          }
+          if(data.status == 'disconnect'){
+            $("#messages").append(formatMessage('Status', 
+                                                '<b>'+data.name + '</b> is gone.'));
+            $("#usersList li:contains('"+data.name+"')").remove();
+          }
         });
         
         socket.on('message', function(data){
@@ -108,7 +133,11 @@ html
       
       });
   body
-    ul#messages
-    form#writerForm
-      input#writer(type='text')
-      input#send(type='submit', value='Send')
+    #chat
+      ul#messages
+      form#writerForm
+        input#writer(type='text')
+        input#send(type='submit', value='Send')
+    #users
+      h3 Connected Users
+      ul#usersList

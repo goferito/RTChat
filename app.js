@@ -4,34 +4,48 @@ var socket = require('socket.io');
 var app = express();
 var server = http.createServer(app);
 var io = socket.listen(server);
+var users = [];
 
 io.sockets.on('connection', function(client){
-    console.log("Client connected...");
-    
-    client.on('message', function(data){
-        console.log(data.id + data.msg);
-        client.get("nickname", function(err, name){
-            client.broadcast.emit("message", {name: name,
-                                              id: data.id, 
-                                              msg: data.msg});
-        });
+  console.log("Client connected...");
+  
+  client.on('message', function(data){
+    console.log(data.id + data.msg);
+    client.get("nickname", function(err, name){
+        client.broadcast.emit("message", {name: name,
+                                          msg: data.msg});
     });
+  });
 
-    client.on('join', function(name){
-        client.set('nickname', name);
-        console.log(name + ' joined the chat');
-        client.broadcast.emit("message", {name: "Status",
-                                          id: 0,
-                                          msg: "<b>"+name+"</b> is in da house."});
-    });
+  client.on('join', function(name){
+    console.log(users);
+    client.set('nickname', name);
+    for (var i=0; i<users.length; i++){
+      client.emit('status', {name: users[i],
+                            status: 'connected'});
+    }
+    users.push(name);
+    console.log(name + ' joined the chat');
+    client.broadcast.emit('status', {name: name,
+                                     status: 'connected'});
+  });
 
-    client.on('partial', function(msg){
-        client.get("nickname", function(err, name){
-            console.log('partial ' + name + ": " + msg);
-            client.broadcast.emit("partial", {name: name,
-                                              msg: msg});
-        });
+  client.on('partial', function(msg){
+    client.get("nickname", function(err, name){
+        console.log('partial ' + name + ": " + msg);
+        client.broadcast.emit("partial", {name: name,
+                                          msg: msg});
     });
+  });
+
+  client.on('disconnect', function(){
+    client.get('nickname', function(err, name){
+      client.broadcast.emit('status', {name: name,
+                                       status: 'disconnect'});
+      users.splice(users.indexOf(name),1);
+      console.log(name+' is disconnected');
+    });
+  });
 });
 
 app.get("/", function(req, res){
