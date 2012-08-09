@@ -74,21 +74,21 @@ html
 					partials.removeClass("partial");
 				});
 
-				socket.on('partial', function(data){
-					var partials = $("#messages li.partial."+data.name);
-					if(data.msg == ''){
-						if(partials.length)
-							partials.remove();
-					}else{
-						if(partials.length){
-							partials.children('.msg').text(data.msg);
-						}else{
-							$("#messages").append(formatMessage(data.name, 
-                                                                data.msg,
-																									true));
-						}
-					}
-				});
+        socket.on('partial', function(data){
+          var partials = $("#messages li.partial."+data.name);
+          if(data.msg == ''){
+            if(partials.length)
+            partials.remove();
+          }else{
+            if(partials.length){
+              partials.children('.msg').text(data.msg);
+            }else{
+              $("#messages").append(formatMessage(data.name, 
+                                                  data.msg,
+                                                  true));
+            }
+          }
+        });
 
 				$("#writer").keyup(function(){
 					var msg = $("#writer").val();
