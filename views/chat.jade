@@ -1,112 +1,112 @@
 !!!
 html
-	head
-		title Real-time Web Chat
-		script(src='/socket.io/socket.io.js')
-		script(src='http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js')
-		style(type='text/css')
-			body{
-				background-color: black;
-				font-family: verdana, arial;
-			}
-			#messages{
-				color: green;
-				padding: 1em;
-				list-style: none;
-			}
-			#messages li{
-				border: 1px solid green;
-				padding: .5em;
-				margin: .3em;
-			}
-			#messages li.me{
-				background-color: #111;
-			}
-			#messages li.Status{
-				color: #0f0;
-			}
-			#writer{
-				border: 1px solid white;
-				background-color: black;
-				color: green;
-				font-family: verdana, arial;
-				font-size: 1em;
-				padding: 0.5em;
-				margin-left: 1em;
-				width: 60%;
-			}
-			#send{
-				background-color: green;
-				color: black;
-				font-weight: bold;
-				padding: .8em;
-				border: 1px solid gray;
-			}
-			#send:hover{
-				background-color: #0f0;
-			}
-			.partial{
-				color: #040;
-			}
-
-  script(type='text/javascript')
-    $(document).ready(function(){
-      function formatMessage(name, msg, partial){
-        if(partial){
-          name += ' partial';
-        }
-        var temp = "<li class='"+name+"'><b>"+name+": </b><span class='msg'>"+msg+"</span></li>";
-        return temp;
+  head
+    title Real-time Web Chat
+    script(src='/socket.io/socket.io.js')
+    script(src='http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js')
+    style(type='text/css')
+      body{
+        background-color: black;
+        font-family: verdana, arial;
       }
-      
-      var socket = io.connect('http://localhost:4000');
-      
-      socket.on('connect', function(data){
-        nickname = prompt("What's your nickname?");
-        socket.emit("join", nickname);
-        $("#messages").append(formatMessage("Status", 
-                "Logged in as <b>"+nickname+"</b>", 0));
-      });
-      
-      socket.on('message', function(data){
-        var partials = $("#messages li.partial."+data.name);
-        partials.children('.msg').text(data.msg);
-        partials.removeClass("partial");
-      });
+      #messages{
+        color: green;
+        padding: 1em;
+        list-style: none;
+      }
+      #messages li{
+        border: 1px solid green;
+        padding: .5em;
+        margin: .3em;
+      }
+      #messages li.me{
+        background-color: #111;
+      }
+      #messages li.Status{
+        color: #0f0;
+      }
+      #writer{
+        border: 1px solid white;
+        background-color: black;
+        color: green;
+        font-family: verdana, arial;
+        font-size: 1em;
+        padding: 0.5em;
+        margin-left: 1em;
+        width: 60%;
+      }
+      #send{
+        background-color: green;
+        color: black;
+        font-weight: bold;
+        padding: .8em;
+        border: 1px solid gray;
+      }
+      #send:hover{
+        background-color: #0f0;
+      }
+      .partial{
+        color: #040;
+      }
 
-      socket.on('partial', function(data){
-        var partials = $("#messages li.partial."+data.name);
-        if(data.msg == ''){
-          if(partials.length)
-            partials.remove();
-        }else{
-          if(partials.length){
-            partials.children('.msg').text(data.msg);
-          }else{
-            $("#messages").append(formatMessage(data.name, 
-                                                data.msg,
-                                                true));
+    script(type='text/javascript')
+      $(document).ready(function(){
+        function formatMessage(name, msg, partial){
+          if(partial){
+            name += ' partial';
           }
+          var temp = "<li class='"+name+"'><b>"+name+": </b><span class='msg'>"+msg+"</span></li>";
+          return temp;
         }
-      });
-
-      $("#writer").keyup(function(){
-        var msg = $("#writer").val();
-        socket.emit('partial', msg);
-      });
+        
+        var socket = io.connect('http://localhost:4000');
+        
+        socket.on('connect', function(data){
+          nickname = prompt("What's your nickname?");
+          socket.emit("join", nickname);
+          $("#messages").append(formatMessage("Status", 
+                  "Logged in as <b>"+nickname+"</b>", 0));
+        });
+        
+        socket.on('message', function(data){
+          var partials = $("#messages li.partial."+data.name);
+          partials.children('.msg').text(data.msg);
+          partials.removeClass("partial");
+        });
+  
+        socket.on('partial', function(data){
+          var partials = $("#messages li.partial."+data.name);
+          if(data.msg == ''){
+            if(partials.length)
+              partials.remove();
+          }else{
+            if(partials.length){
+              partials.children('.msg').text(data.msg);
+            }else{
+              $("#messages").append(formatMessage(data.name, 
+                                                  data.msg,
+                                                  true));
+            }
+          }
+        });
+  
+        $("#writer").keyup(function(){
+          var msg = $("#writer").val();
+          socket.emit('partial', msg);
+        });
+        
+        $("#writerForm").submit(function(e){
+          var msg = $("#writer").val();
+          if(msg != ''){
+            var message = {msg: msg};
+            socket.emit('message', message);
+            $("#writer").val('');
+            $("#messages").append(formatMessage("me", msg));
+          }
+          return false;
+        });
       
-      $("#writerForm").submit(function(e){
-        var msg = $("#writer").val();
-        if(msg != ''){
-          var message = {msg: msg};
-          socket.emit('message', message);
-          $("#writer").val('');
-          $("#messages").append(formatMessage("me", msg));
-        }
-        return false;
       });
-    
-    });
   body
     ul#messages
     form#writerForm
