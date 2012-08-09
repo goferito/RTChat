@@ -63,10 +63,11 @@ html
     script(type='text/javascript')
       $(document).ready(function(){
         function formatMessage(name, msg, partial){
+          var clas = name;
           if(partial){
-            name += ' partial';
+            clas += ' partial';
           }
-          var temp = "<li class='"+name+"'><b>"+name+": </b><span class='msg'>"+msg+"</span></li>";
+          var temp = "<li class='"+clas+"'><b>"+name+": </b><span class='msg'>"+msg+"</span></li>";
           return temp;
         }
         
