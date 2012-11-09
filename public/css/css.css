@@ -1,0 +1,54 @@
+body{
+    background-color: black;
+    color: green;
+    font-family: verdana, arial;
+}
+#chat{
+    float: left;
+    width: 75%;
+}
+#users{
+    float: left;
+    width: 20%;
+    border: 1px solid green;
+    padding: .5em;
+    margin: .5em;
+}
+#messages{
+    padding: 1em;
+    list-style: none;
+}
+#messages li{
+    border: 1px solid green;
+    padding: .5em;
+    margin: .3em;
+}
+#messages li.me{
+    background-color: #111;
+}
+#messages li.Status{
+    color: #0f0;
+}
+#writer{
+    border: 1px solid white;
+    background-color: black;
+    color: green;
+    font-family: verdana, arial;
+    font-size: 1em;
+    padding: 0.5em;
+    margin-left: 1em;
+    width: 60%;
+}
+#send{
+    background-color: green;
+    color: black;
+    font-weight: bold;
+    padding: .8em;
+    border: 1px solid gray;
+}
+#send:hover{
+    background-color: #0f0;
+}
+.partial{
+    color: #040;
+}

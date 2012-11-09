@@ -4,7 +4,12 @@ var socket = require('socket.io');
 var app = express();
 var server = http.createServer(app);
 var io = socket.listen(server);
+var path = require("path");
 var users = [];
+
+app.configure(function(){
+    app.use(express.static(path.join(__dirname, 'public')));
+});
 
 io.sockets.on('connection', function(client){
   console.log("Client connected...");
